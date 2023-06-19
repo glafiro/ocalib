@@ -13,7 +13,8 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void initializeShaders(unsigned int &vertexShader, vector<Triangle> &triangles) {
+template<typename T>
+void initializeShaders(unsigned int &vertexShader, vector<T> &shapes) {
 
 	// 1) Create shader string
 	string mainVertexShaderFile = ocaReadTextFile("vert.glsl");
@@ -43,7 +44,7 @@ void initializeShaders(unsigned int &vertexShader, vector<Triangle> &triangles) 
 
 	// Load and read fragment shaders for each mesh:
 
-	for (auto& t : triangles) {
+	for (auto& t : shapes) {
 		// 1) Create shader string
 		string fragShaderFile = ocaReadTextFile(t.shaderPath);
 		const char* fragShaderSource = fragShaderFile.c_str();
@@ -90,35 +91,32 @@ void initializeShaders(unsigned int &vertexShader, vector<Triangle> &triangles) 
 	glDeleteShader(vertexShader);
 }
 
-void constructTriangles(vector<vector<float>> vertices, vector<Triangle> &triangles) {
-	for (int i = 0; i < 2; i++) {
-		Triangle t{};
-		for (int j = 0; j < 9; j++) {
-			t.vertices.push_back(vertices[i][j]);
-		}
-		t.shaderPath = SHADERS[i];
-		triangles.push_back(t);
-	}
-}
+void loadQuads(vector<Quad>& quads) {
+	STATE.quads = quads;
 
-void loadTriangles(vector<vector<float>> vertices) {
-	constructTriangles(vertices, STATE.triangles);
+	initializeShaders(STATE.mainVertexShader, STATE.quads);
 
-	initializeShaders(STATE.mainVertexShader, STATE.triangles);
-
-	for (auto& t : STATE.triangles) {
+	for (auto& t : STATE.quads) {
 		vector<float> v = t.vertices;
+		vector<unsigned int> i = t.indices;
 
 		glGenVertexArrays(1, &t.VAO);
 		glBindVertexArray(t.VAO);
 
 		glGenBuffers(1, &t.VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, t.VBO);
-
 		glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), &v[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &t.EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, t.EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.size() * sizeof(unsigned int), &i[0], GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// Vertex attributes stay the same
 		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
 	}
 }
 
@@ -175,11 +173,11 @@ void endDrawing() {
 	glBindVertexArray(0);
 }
 
-void drawTriangle() {
-	for (auto& t : STATE.triangles) {
+void drawQuad() {
+	for (auto& t : STATE.quads) {
 		glUseProgram(t.shaderProgram);
 		glBindVertexArray(t.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 }
 
@@ -189,9 +187,10 @@ void clearBackground(RGBA c) {
 }
 
 void closeWindow() {
-	for (auto& t : STATE.triangles) {
+	for (auto& t : STATE.quads) {
 		glDeleteVertexArrays(1, &t.VAO);
 		glDeleteBuffers(1, &t.VBO);
+		glDeleteBuffers(1, &t.EBO);
 		glDeleteProgram(t.shaderProgram);
 	}
 

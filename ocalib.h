@@ -19,6 +19,17 @@ struct Triangle {
 	unsigned int shaderProgram;
 };
 
+struct Quad {
+	unsigned int VBO;
+	unsigned int VAO;
+	unsigned int EBO;
+	vector<float> vertices;
+	vector<unsigned int> indices;
+	string shaderPath;
+	unsigned int fragShader;
+	unsigned int shaderProgram;
+};
+
 struct AppState {
 
 	GLFWwindow* mainWindow;
@@ -32,6 +43,7 @@ struct AppState {
 	unsigned int EBO;
 
 	vector<Triangle> triangles;
+	vector<Quad> quads;
 };
 
 struct RGBA {
@@ -42,8 +54,6 @@ struct RGBA {
 };
 
 static AppState STATE{};
-
-static vector<string> SHADERS{ "fragOrange.glsl", "fragYellow.glsl" };
 
 /** Read a text file given a specified path.
 *
@@ -62,17 +72,16 @@ string ocaReadTextFile(std::string path);
 */
 void initWindow(int w, int h, const char* title);
 
-/** Load an array of vertices into memory, which will be interpreted as triangles.
+/** Load an array of vertices into memory, which will be interpreted as quads.
 *
 * @param vertices a vector of a vector of vertices.
 */
-void loadTriangles(vector<vector<float>> vertices);
-
+void loadQuads(vector<Quad>& quads);
 
 bool windowShouldClose();
 void beginDrawing();
 void endDrawing();
-void drawTriangle();
+void drawQuad();
 void clearBackground(RGBA c);
 void closeWindow();
 
