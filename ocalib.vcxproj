@@ -128,13 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ocafile.cpp" />
+    <ClCompile Include="ocaglsl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ocafile.h" />
     <ClInclude Include="ocalib.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="frag.glsl" />
+    <None Include="fragOrange.glsl" />
+    <None Include="fragYellow.glsl" />
     <None Include="vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

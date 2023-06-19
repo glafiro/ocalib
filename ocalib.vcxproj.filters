@@ -18,11 +18,14 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ocafile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ocaglsl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ocafile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ocalib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -31,7 +34,10 @@
     <None Include="vert.glsl">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="frag.glsl">
+    <None Include="fragOrange.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="fragYellow.glsl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

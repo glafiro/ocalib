@@ -1,16 +1,19 @@
-#pragma once
 
 #include <fstream>
 #include <sstream>
 #include <string>
+using std::string;
 
-std::string ocaReadTextFile(std::string path) {
+#include "ocalib.h"
+
+string ocaReadTextFile(string path) {
 	std::ifstream myfile{ path };
 	std::stringstream ss;
-	std::string line;
+	string line;
 	while (std::getline(myfile, line)) {
 		ss << line << '\n';
 	}
 
 	return ss.str();
 }
+
