@@ -17,20 +17,23 @@
 
 #define N_QUADS				1
 #define VERTICES_IN_QUAD	12
-#define INDICES_IN_QUAD		6
+
+#define N_TRIS				1
+#define VERTICES_IN_TRI		9
 
 static vector<string> SHADERS{ "fragOrange.glsl", "fragYellow.glsl" };
 
-float vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+float quad_vertices[] = {
+	0.8f,  0.2f, 0.0f,  // top right
+	0.8f,  0.8f, 0.0f,  // bottom right
+	0.0f,  0.8f, 0.0f,  // bottom left
+	0.0f,  0.2f, 0.0f   // top left 
 };
 
-unsigned int indices[] = {  // note that we start from 0!
-	0, 1, 3,  // first Triangle
-	1, 2, 3   // second Triangle
+float tri_vertices[] = {
+	-0.8f, -0.3f, 0.0f,
+	-0.2f, -0.3f, 0.0f,
+	-0.5f, 0.3f, 0.0f
 };
 
 int main() {
@@ -38,20 +41,28 @@ int main() {
 	initWindow(DEFAULT_W, DEFAULT_H, "Hello world");
 
 	vector<Quad> quads;
+	vector<Triangle> triangles;
 
 	for (int i = 0; i < N_QUADS; i++) {
 		Quad q;
 		for (int j = 0; j < VERTICES_IN_QUAD; j++) {
-			q.vertices.push_back(vertices[j]);
+			q.vertices.push_back(quad_vertices[j]);
 		}
-		for (int j = 0; j < INDICES_IN_QUAD; j++) {
-			q.indices.push_back(indices[j]);
-		}
-		q.shaderPath = "fragYellow.glsl";
+		q.shaderPath = SHADERS[0];
 		quads.push_back(q);
 	}
 
+	for (int i = 0; i < N_TRIS; i++) {
+		Triangle t;
+		for (int j = 0; j < VERTICES_IN_TRI; j++) {
+			t.vertices.push_back(tri_vertices[j]);
+		}
+		t.shaderPath = SHADERS[1];
+		triangles.push_back(t);
+	}
+
 	loadQuads(quads);
+	loadTriangles(triangles);
 
 	RGBA c{ 0.1f, 0.3f, 0.7f, 1.0f };
 
@@ -61,6 +72,7 @@ int main() {
 		
 		clearBackground(c);
 		drawQuad();
+		drawTriangle();
 
 		endDrawing();
 	}

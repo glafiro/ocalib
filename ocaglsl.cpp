@@ -9,6 +9,11 @@
 
 using std::string;
 
+const static unsigned int QUAD_INDICES[] = {  // note that we start from 0!
+	0, 1, 3,  // first Triangle
+	1, 2, 3   // second Triangle
+};
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
@@ -98,7 +103,6 @@ void loadQuads(vector<Quad>& quads) {
 
 	for (auto& t : STATE.quads) {
 		vector<float> v = t.vertices;
-		vector<unsigned int> i = t.indices;
 
 		glGenVertexArrays(1, &t.VAO);
 		glBindVertexArray(t.VAO);
@@ -109,7 +113,7 @@ void loadQuads(vector<Quad>& quads) {
 
 		glGenBuffers(1, &t.EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, t.EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, i.size() * sizeof(unsigned int), &i[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// Vertex attributes stay the same
 		glEnableVertexAttribArray(0);
@@ -119,6 +123,31 @@ void loadQuads(vector<Quad>& quads) {
 
 	}
 }
+
+void loadTriangles(vector<Triangle>& triangles) {
+	STATE.triangles = triangles;
+
+	initializeShaders(STATE.mainVertexShader, STATE.triangles);
+
+	for (auto& t : STATE.triangles) {
+		vector<float> v = t.vertices;
+
+		glGenVertexArrays(1, &t.VAO);
+		glBindVertexArray(t.VAO);
+
+		glGenBuffers(1, &t.VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, t.VBO);
+		glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), &v[0], GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// Vertex attributes stay the same
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+	}
+}
+
 
 void initWindow(int w, int h, const char* title) {
 	if (!glfwInit()) {
@@ -174,10 +203,18 @@ void endDrawing() {
 }
 
 void drawQuad() {
-	for (auto& t : STATE.quads) {
+	for (auto& q : STATE.quads) {
+		glUseProgram(q.shaderProgram);
+		glBindVertexArray(q.VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}	
+}
+
+void drawTriangle() {
+	for (auto& t : STATE.triangles) {
 		glUseProgram(t.shaderProgram);
 		glBindVertexArray(t.VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 }
 
@@ -187,10 +224,15 @@ void clearBackground(RGBA c) {
 }
 
 void closeWindow() {
-	for (auto& t : STATE.quads) {
+	for (auto& q : STATE.quads) {
+		glDeleteVertexArrays(1, &q.VAO);
+		glDeleteBuffers(1, &q.VBO);
+		glDeleteBuffers(1, &q.EBO);
+		glDeleteProgram(q.shaderProgram);
+	}	
+	for (auto& t : STATE.triangles) {
 		glDeleteVertexArrays(1, &t.VAO);
 		glDeleteBuffers(1, &t.VBO);
-		glDeleteBuffers(1, &t.EBO);
 		glDeleteProgram(t.shaderProgram);
 	}
 

@@ -24,7 +24,6 @@ struct Quad {
 	unsigned int VAO;
 	unsigned int EBO;
 	vector<float> vertices;
-	vector<unsigned int> indices;
 	string shaderPath;
 	unsigned int fragShader;
 	unsigned int shaderProgram;
@@ -74,14 +73,22 @@ void initWindow(int w, int h, const char* title);
 
 /** Load an array of vertices into memory, which will be interpreted as quads.
 *
-* @param vertices a vector of a vector of vertices.
+* @param quads a vector of quads.
 */
 void loadQuads(vector<Quad>& quads);
 
+/** Load an array of vertices into memory, which will be interpreted as triangles.
+*
+* @param quads a vector of triangles.
+*/
+void loadTriangles(vector<Triangle>& triangles);
+
+// TODO Write documentation for this
 bool windowShouldClose();
 void beginDrawing();
 void endDrawing();
 void drawQuad();
+void drawTriangle();
 void clearBackground(RGBA c);
 void closeWindow();
 
